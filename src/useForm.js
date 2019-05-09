@@ -3,34 +3,39 @@ import { createForm, configOptions } from 'final-form'
 import useFormState from './useFormState'
 import shallowEqual from './internal/shallowEqual'
 
+// https://reactjs.org/docs/hooks-faq.html#how-to-create-expensive-objects-lazily
+const useMemoOnce = factory => {
+  const ref = useRef()
+
+  if (!ref.current) {
+    ref.current = factory()
+  }
+
+  return ref.current
+}
+
 const useForm = ({
   subscription,
   initialValuesEqual = shallowEqual,
   ...config
 }) => {
-  const form = useRef()
+  const form = useMemoOnce(() => createForm(config))
   const prevConfig = useRef(config)
-
-  // https://reactjs.org/docs/hooks-faq.html#how-to-create-expensive-objects-lazily
-  const getForm = () => {
-    if (!form.current) {
-      form.current = createForm(config)
-    }
-
-    return form.current
-  }
-  const state = useFormState(getForm(), subscription)
-  const handleSubmit = useCallback(event => {
-    if (event) {
-      if (typeof event.preventDefault === 'function') {
-        event.preventDefault()
+  const state = useFormState(form, subscription)
+  const handleSubmit = useCallback(
+    event => {
+      if (event) {
+        if (typeof event.preventDefault === 'function') {
+          event.preventDefault()
+        }
+        if (typeof event.stopPropagation === 'function') {
+          event.stopPropagation()
+        }
       }
-      if (typeof event.stopPropagation === 'function') {
-        event.stopPropagation()
-      }
-    }
-    return getForm().submit()
-  }, [])
+      return form.submit()
+    },
+    [form]
+  )
 
   useEffect(() => {
     if (config === prevConfig.current) {
@@ -56,7 +61,7 @@ const useForm = ({
     prevConfig.current = config
   })
 
-  return { ...state, form: getForm(), handleSubmit }
+  return { ...state, form, handleSubmit }
 }
 
 export default useForm

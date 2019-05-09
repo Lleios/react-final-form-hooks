@@ -12,16 +12,18 @@ const subscriptionToInputs = subscription =>
 const eventValue = event => {
   if (!event || !event.target) {
     return event
-  } else if (['checkbox', 'radio'].includes(event.target.type)) {
+  } else if (event.target.type === 'checkbox') {
     return event.target.checked
   }
 
   return event.target.value
 }
 
-const useField = (name, form, subscription = all) => {
+const useField = (name, form, validate, subscription = all) => {
   const autoFocus = useRef(false)
   const [state, setState] = useState({})
+
+  const deps = subscriptionToInputs(subscription)
   useEffect(
     () =>
       form.registerField(
@@ -33,11 +35,17 @@ const useField = (name, form, subscription = all) => {
           }
           setState(newState)
         },
-        subscription
+        subscription,
+        validate
+          ? {
+              getValidator: () => validate
+            }
+          : undefined
       ),
-    [name, ...subscriptionToInputs(subscription)]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [name, form, validate, ...deps]
   )
-  let { blur, change, focus, value, ...meta } = state || {}
+  let { blur, change, focus, value, ...meta } = state
   delete meta.name // it's in input
   return {
     input: {

@@ -15,7 +15,7 @@
 
 ✅ Opt-in subscriptions - only update on the state you need!
 
-✅ 💥 [**1.22 kB gzipped**](https://bundlephobia.com/result?p=react-final-form-hooks) 💥
+✅ 💥 [**1.2 kB gzipped**](https://bundlephobia.com/result?p=react-final-form-hooks) 💥
 
 ---
 
@@ -85,7 +85,13 @@ const MyForm = () => {
   - [Simple Example](#simple-example)
 - [API](#api)
   - [`useField`](#usefield)
+    - [`name : string`](#name--string)
+    - [`form : Form`](#form--form)
+    - [`validate? : (value:any) => any`](#validate--valueany--any)
+    - [`subscription? : FieldSubscription`](#subscription--fieldsubscription)
   - [`useForm`](#useform)
+    - [`onSubmit : (values:Object) => ?Object | Promise<?Object> | void`](#onsubmit--valuesobject--object--promiseobject--void)
+    - [`validate?: (values:Object) => Object | Promise<Object>`](#validate-valuesobject--object--promiseobject)
 - [Contributors](#contributors)
 - [Backers](#backers)
 - [Sponsors](#sponsors)
@@ -106,9 +112,37 @@ The following can be imported from `react-final-form-hooks`.
 
 Returns an object similar to [`FieldRenderProps`](https://github.com/final-form/react-final-form#fieldrenderprops).
 
+`useField` takes four parameters:
+
+#### `name : string`
+
+> The name of the field. Required.
+
+#### `form : Form`
+
+> The object returned from `useForm`. Required.
+
+#### `validate? : (value:any) => any`
+
+> A field-level validation function that takes the current value and returns `undefined` if it is valid, or the error if it is not. Optional.
+
+#### `subscription? : FieldSubscription`
+
+> A subscription of which parts of field state to be notified about. See [`FieldSubscription`](https://github.com/final-form/final-form#fieldsubscription--string-boolean-). Optional.
+
 ### `useForm`
 
 Returns an object similar to [`FormRenderProps`](https://github.com/final-form/react-final-form#formrenderprops).
+
+`useForm` takes two parameters:
+
+#### `onSubmit : (values:Object) => ?Object | Promise<?Object> | void`
+
+See [🏁 Final Form's `onSubmit` docs](https://github.com/final-form/final-form#onsubmit-values-object-form-formapi-callback-errors-object--void--object--promiseobject--void) for more information. Required.
+
+#### `validate?: (values:Object) => Object | Promise<Object>`
+
+A record level validation function. See [🏁 Final Form's `validate` docs](https://github.com/final-form/final-form#validate-values-object--object--promiseobject) for more information. Optional.
 
 ---
 
